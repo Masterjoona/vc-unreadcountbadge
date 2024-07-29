@@ -23,7 +23,7 @@ export default definePlugin({
             find: "UNREAD_IMPORTANT:",
             replacement: {
                 match: /\.name\),.{0,120}\.children.+?:null(?<=,channel:(\i).+?)/,
-                replace: "$&,$self.CountBadge($1.id)"
+                replace: "$&,$self.CountBadge({channelId:$1.id})"
             }
         },
     ],
