@@ -4,11 +4,11 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+import ErrorBoundary from "@components/ErrorBoundary";
 import { Devs } from "@utils/constants";
 import definePlugin from "@utils/types";
 import { findByPropsLazy } from "@webpack";
 import { ReadStateStore, useStateFromStores } from "@webpack/common";
-
 const { NumberBadge } = findByPropsLazy("NumberBadge");
 
 import "./styles.css";
@@ -27,9 +27,10 @@ export default definePlugin({
             }
         },
     ],
-    CountBadge(channelId: string) {
+
+    CountBadge: ErrorBoundary.wrap(({ channelId }: { channelId: string; }) => {
         const unreadCount = useStateFromStores([ReadStateStore], () => ReadStateStore.getUnreadCount(channelId));
         if (!unreadCount) return null;
         return <NumberBadge count={unreadCount} color="var(--brand-500)" className="unreadCountBadge" />;
-    }
+    }, { noop: true })
 });
