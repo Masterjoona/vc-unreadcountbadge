@@ -10,13 +10,14 @@ import { definePluginSettings } from "@api/Settings";
 import ErrorBoundary from "@components/ErrorBoundary";
 import { Devs } from "@utils/constants";
 import definePlugin, { OptionType } from "@utils/types";
-import { findByPropsLazy, findStoreLazy } from "@webpack";
+import { findComponentByCodeLazy, findStoreLazy } from "@webpack";
 import { ReadStateStore, useStateFromStores } from "@webpack/common";
 import { Channel } from "discord-types/general";
+import { JSX } from "react";
 
 const UserGuildSettingsStore = findStoreLazy("UserGuildSettingsStore");
 const JoinedThreadsStore = findStoreLazy("JoinedThreadsStore");
-const { NumberBadge } = findByPropsLazy("NumberBadge");
+const NumberBadge = findComponentByCodeLazy("numberBadge", ".STATUS_DANGER,");
 
 const settings = definePluginSettings({
     showOnMutedChannels: {
