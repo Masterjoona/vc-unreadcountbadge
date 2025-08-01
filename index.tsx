@@ -8,9 +8,9 @@ import { definePluginSettings } from "@api/Settings";
 import ErrorBoundary from "@components/ErrorBoundary";
 import { Devs } from "@utils/constants";
 import definePlugin, { OptionType } from "@utils/types";
+import { Channel } from "@vencord/discord-types";
 import { findComponentByCodeLazy, findStoreLazy } from "@webpack";
 import { ReadStateStore, useStateFromStores } from "@webpack/common";
-import { Channel } from "discord-types/general";
 
 const UserGuildSettingsStore = findStoreLazy("UserGuildSettingsStore");
 const JoinedThreadsStore = findStoreLazy("JoinedThreadsStore");
@@ -41,7 +41,7 @@ export default definePlugin({
             find: "UNREAD_IMPORTANT:",
             replacement: [
                 {
-                    match: /.name,{.{0,140}\.children.+?:null/,
+                    match: /\.Children\.count.+?:null/,
                     replace: "$&,$self.CountBadge({channel: arguments[0].channel})",
                 },
             ]
