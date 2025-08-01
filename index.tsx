@@ -8,9 +8,9 @@ import { definePluginSettings } from "@api/Settings";
 import ErrorBoundary from "@components/ErrorBoundary";
 import { Devs } from "@utils/constants";
 import definePlugin, { OptionType } from "@utils/types";
-import { Channel } from "@vencord/discord-types";
 import { findComponentByCodeLazy, findStoreLazy } from "@webpack";
 import { ReadStateStore, useStateFromStores } from "@webpack/common";
+import typingIndicator from "plugins/typingIndicator";
 
 const UserGuildSettingsStore = findStoreLazy("UserGuildSettingsStore");
 const JoinedThreadsStore = findStoreLazy("JoinedThreadsStore");
@@ -23,58 +23,44 @@ const settings = definePluginSettings({
         default: false,
     },
     notificationCountLimit: {
-        description: "Show +99 instead of true amount",
+        description: "Show +100 instead of the true unread count when it exceeds 100",
         type: OptionType.BOOLEAN,
         default: false,
     },
 });
-
 export default definePlugin({
     name: "UnreadCountBadge",
     authors: [Devs.Joona],
     description: "Shows unread message count badges on channels in the channel list",
     settings,
 
-    patches: [
-        // Kanged from typingindicators
-        {
-            find: "UNREAD_IMPORTANT:",
-            replacement: [
-                {
-                    match: /\.Children\.count.+?:null/,
-                    replace: "$&,$self.CountBadge({channel: arguments[0].channel})",
-                },
-            ]
-        },
-        // Threads
-        {
-            // This is the thread "spine" that shows in the left
-            find: "M0 15H2c0 1.6569",
-            replacement: [
-                {
-                    match: /mentionsCount:\i.{0,50}?null/,
-                    replace: "$&,$self.CountBadge({channel: arguments[0].thread})",
-                },
-            ]
-        },
-    ],
+    patches: typingIndicator.patches.map(p => ({
+        find: p.find,
+        replacement: {
+            match: p.replacement.match,
+            replace: p.replacement.replace.replaceAll("TypingIndicator", "UnreadCountBadge")
+        }
+    })),
 
-    CountBadge: ErrorBoundary.wrap(({ channel }: { channel: Channel; }) => {
-        const unreadCount = useStateFromStores([ReadStateStore], () => ReadStateStore.getUnreadCount(channel.id));
+    UnreadCountBadge: (channelId: string, guildId: string) => {
+        const unreadCount = useStateFromStores([ReadStateStore], () => ReadStateStore.getUnreadCount(channelId));
         if (!unreadCount) return null;
 
-        if (!settings.store.showOnMutedChannels && (UserGuildSettingsStore.isChannelMuted(channel.guild_id, channel.id) || JoinedThreadsStore.isMuted(channel.id)))
+        if (!settings.store.showOnMutedChannels && (UserGuildSettingsStore.isChannelMuted(guildId, channelId) || JoinedThreadsStore.isMuted(channelId)))
             return null;
 
         return (
-            <NumberBadge
-                color="var(--brand-500)"
-                count={
-                    unreadCount > 99 && settings.store.notificationCountLimit
-                        ? "+99"
-                        : unreadCount
-                }
-            />
+            <ErrorBoundary noop>
+                <NumberBadge
+                    color="var(--control-background-primary-default)"
+                    className="vc-unreadcountbadge"
+                    count={
+                        unreadCount > 100 && settings.store.notificationCountLimit
+                            ? "+100"
+                            : unreadCount
+                    }
+                />
+            </ErrorBoundary>
         );
-    }, { noop: true }),
+    },
 });
