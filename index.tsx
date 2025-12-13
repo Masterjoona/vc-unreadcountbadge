@@ -28,6 +28,7 @@ const settings = definePluginSettings({
         default: false,
     },
 });
+
 export default definePlugin({
     name: "UnreadCountBadge",
     authors: [Devs.Joona],
@@ -43,7 +44,7 @@ export default definePlugin({
     })),
 
     UnreadCountBadge: (channelId: string, guildId: string) => {
-        const unreadCount = useStateFromStores([ReadStateStore], () => ReadStateStore.getUnreadCount(channelId));
+        const unreadCount = useStateFromStores([ReadStateStore], () => ReadStateStore.getUnreadCount(channelId), []);
         if (!unreadCount) return null;
 
         if (!settings.store.showOnMutedChannels && (UserGuildSettingsStore.isChannelMuted(guildId, channelId) || JoinedThreadsStore.isMuted(channelId)))
@@ -52,7 +53,7 @@ export default definePlugin({
         return (
             <ErrorBoundary noop>
                 <NumberBadge
-                    color="var(--control-background-primary-default)"
+                    color="var(--control-primary-background-default)"
                     className="vc-unreadcountbadge"
                     count={
                         unreadCount > 100 && settings.store.notificationCountLimit
