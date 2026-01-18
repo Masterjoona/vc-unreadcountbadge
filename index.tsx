@@ -14,7 +14,7 @@ import typingIndicator from "plugins/typingIndicator";
 
 const UserGuildSettingsStore = findStoreLazy("UserGuildSettingsStore");
 const JoinedThreadsStore = findStoreLazy("JoinedThreadsStore");
-const NumberBadge = findComponentByCodeLazy("numberBadge", ".STATUS_DANGER");
+const NumberBadge = findComponentByCodeLazy("numberBadge", "renderBadgeCount");
 
 const settings = definePluginSettings({
     showOnMutedChannels: {
