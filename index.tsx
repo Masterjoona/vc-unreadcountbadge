@@ -8,13 +8,15 @@ import { definePluginSettings } from "@api/Settings";
 import ErrorBoundary from "@components/ErrorBoundary";
 import { Devs } from "@utils/constants";
 import definePlugin, { OptionType } from "@utils/types";
-import { findComponentByCodeLazy, findStoreLazy } from "@webpack";
+import { filters, findStoreLazy, mapMangledModuleLazy } from "@webpack";
 import { ReadStateStore, useStateFromStores } from "@webpack/common";
 import typingIndicator from "plugins/typingIndicator";
 
 const UserGuildSettingsStore = findStoreLazy("UserGuildSettingsStore");
 const JoinedThreadsStore = findStoreLazy("JoinedThreadsStore");
-const NumberBadge = findComponentByCodeLazy('renderBadgeCount"');
+const { NumberBadge } = mapMangledModuleLazy('SQUARE:""}', {
+    NumberBadge: filters.componentByCode("renderBadgeCount:")
+});
 
 const settings = definePluginSettings({
     showOnMutedChannels: {
