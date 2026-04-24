@@ -6,11 +6,11 @@
 
 import { definePluginSettings } from "@api/Settings";
 import ErrorBoundary from "@components/ErrorBoundary";
+import typingIndicator from "@plugins/typingIndicator";
 import { Devs } from "@utils/constants";
 import definePlugin, { OptionType } from "@utils/types";
 import { filters, findStoreLazy, mapMangledModuleLazy } from "@webpack";
 import { ReadStateStore, useStateFromStores } from "@webpack/common";
-import typingIndicator from "plugins/typingIndicator";
 
 const UserGuildSettingsStore = findStoreLazy("UserGuildSettingsStore");
 const JoinedThreadsStore = findStoreLazy("JoinedThreadsStore");
