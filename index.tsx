@@ -9,12 +9,10 @@ import ErrorBoundary from "@components/ErrorBoundary";
 import typingIndicator from "@plugins/typingIndicator";
 import { Devs } from "@utils/constants";
 import definePlugin, { OptionType } from "@utils/types";
-import { filters, findStoreLazy, mapMangledModuleLazy } from "@webpack";
-import { ReadStateStore, useStateFromStores } from "@webpack/common";
+import { filters, mapMangledModuleLazy } from "@webpack";
+import { JoinedThreadsStore, ReadStateStore, UserGuildSettingsStore, useStateFromStores } from "@webpack/common";
 
-const UserGuildSettingsStore = findStoreLazy("UserGuildSettingsStore");
-const JoinedThreadsStore = findStoreLazy("JoinedThreadsStore");
-const { NumberBadge } = mapMangledModuleLazy('SQUARE:""}', {
+const { NumberBadge } = mapMangledModuleLazy(['SQUARE:""}', ".BADGE_NOTIFICATION_BACKGROUND.css,"], {
     NumberBadge: filters.componentByCode("renderBadgeCount:")
 });
 
@@ -49,7 +47,8 @@ export default definePlugin({
         const unreadCount = useStateFromStores([ReadStateStore], () => ReadStateStore.getUnreadCount(channelId), []);
         if (!unreadCount) return null;
 
-        if (!settings.store.showOnMutedChannels && (UserGuildSettingsStore.isChannelMuted(guildId, channelId) || JoinedThreadsStore.isMuted(channelId)))
+        const isMuted = UserGuildSettingsStore.isChannelMuted(guildId, channelId) || JoinedThreadsStore.isMuted(channelId);
+        if (!settings.store.showOnMutedChannels && isMuted)
             return null;
 
         return (
