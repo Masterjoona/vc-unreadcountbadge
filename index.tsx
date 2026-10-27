@@ -9,12 +9,10 @@ import ErrorBoundary from "@components/ErrorBoundary";
 import typingIndicator from "@plugins/typingIndicator";
 import { Devs } from "@utils/constants";
 import definePlugin, { OptionType } from "@utils/types";
-import { filters, mapMangledModuleLazy } from "@webpack";
+import { findComponentByCodeLazy } from "@webpack";
 import { JoinedThreadsStore, ReadStateStore, UserGuildSettingsStore, useStateFromStores } from "@webpack/common";
 
-const { NumberBadge } = mapMangledModuleLazy(['SQUARE:""}', ".BADGE_NOTIFICATION_BACKGROUND.css,"], {
-    NumberBadge: filters.componentByCode("renderBadgeCount:")
-});
+const NumberBadge = findComponentByCodeLazy(".BADGE_NOTIFICATION_BACKGROUND.css,", ".LARGE,");
 
 const settings = definePluginSettings({
     showOnMutedChannels: {
@@ -51,16 +49,14 @@ export default definePlugin({
         if (!settings.store.showOnMutedChannels && isMuted)
             return null;
 
+        const showLimitedCount = unreadCount > 100 && settings.store.notificationCountLimit;
+
         return (
             <ErrorBoundary noop>
                 <NumberBadge
                     color="var(--control-primary-background-default)"
                     className="vc-unreadcountbadge"
-                    count={
-                        unreadCount > 100 && settings.store.notificationCountLimit
-                            ? "+100"
-                            : unreadCount
-                    }
+                    text={showLimitedCount ? "+100" : unreadCount}
                 />
             </ErrorBoundary>
         );
